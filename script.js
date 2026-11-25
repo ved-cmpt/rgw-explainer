@@ -344,7 +344,7 @@
       } else if (st.side === "below") {
         verdict.textContent = st.L < 1 ? "Starting to leak" : "Leaking";
         msg = trim(st.f, 1) + " GHz is below the stop band, which starts near 10 GHz. One wave is " + lam +
-          " mm long here, so the 5 mm pins are far shorter than a quarter of it. To this wave they are just bumps on the floor, and it spreads out sideways.";
+          " mm long here, so the pins are far shorter than a quarter of it. To this wave they are just bumps on the floor, and it spreads out sideways.";
       } else if (st.f < 23) {
         verdict.textContent = st.L < 1 ? "Starting to leak" : "Leaking";
         msg = "With a " + trim(st.gap, 2) + " mm gap the fence only holds up to about " + hiTxt + " GHz (toy estimate), and " +
@@ -497,8 +497,11 @@
 
   /* ------------------------------------------------------------------ FENCE: band-gap rule-of-thumb calculator */
   // Pin fences used in the thesis: pin height d and gap h (mm), and the stop band its simulations report (GHz).
+  // Note: "main" uses Table 3.2's dimensions; its 10-23 GHz band is Chapter 2's result for pins with the same
+  // spacing, width and gap. The thesis does not state the Chapter 2 pin height, so the two are not called identical.
   var FENCES = {
-    main:    { d: 5,   h: 1,     sim: [10, 23],   what: "pins alone", page: "Ch. 2, p. 32; Table 3.2" },
+    main:    { d: 5,   h: 1,     sim: [10, 23],   what: "Chapter 2\u2019s pins, which share this spacing, width and gap (their height is not stated)", sub: "Ch. 2 pins, same spacing and gap", page: "Ch. 2, p. 32",
+               extra: " For exactly these dimensions (Table 3.2), Chapter 3 quotes a simulated ratio of 2.39 : 1 (p. 73).", tail: " Either way, the real band is far wider than the formula\u2019s 1.67 : 1." },
     test:    { d: 3,   h: 0.5,   sim: [17, 39],   what: "a waveguide built from these pins", page: "Ch. 3, pp. 63, 70" },
     coupler: { d: 4.7, h: 1,     sim: [11, 25],   what: "pins alone", page: "Ch. 4, pp. 100–102" },
     divider: { d: 6,   h: 0.625, sim: [10, 20.5], what: "pins with the ridge", page: "Ch. 4, pp. 92–93" }
@@ -543,7 +546,7 @@
       var preset = active ? FENCES[active] : null;
       var rows = [{ label: "Rule of thumb", a: ok ? f1 : null, b: f2, kind: "rule", empty: "no stop band",
         note: "From the two quick formulas: c/(4d) to c/(2(d+h)).", page: "Ch. 3, Sec. 3.2.2" }];
-      if (preset) rows.push({ label: "Full simulation", sub: preset.what, a: preset.sim[0], b: preset.sim[1], kind: "sim",
+      if (preset) rows.push({ label: "Full simulation", sub: preset.sub || preset.what, a: preset.sim[0], b: preset.sim[1], kind: "sim",
         note: "Stop band reported by the thesis for " + preset.what + ".", page: preset.page });
       bandChart($("#fence-axis"), { min: 0, max: 75, ticks: [0, 15, 30, 45, 60, 75], rows: rows, tight: true });
 
@@ -553,7 +556,7 @@
       } else {
         msg = "Rule of thumb: these pins block sideways travel from about " + fmt(f1, 1) + " to " + fmt(f2, 1) + " GHz.";
         if (preset) msg += " The thesis’s full simulation for " + preset.what + " gives about " + trim(preset.sim[0], 1) + " to " +
-          trim(preset.sim[1], 1) + " GHz (" + preset.page + "). The real band starts much lower than the formula suggests.";
+          trim(preset.sim[1], 1) + " GHz (" + preset.page + ")." + (preset.extra || "") + (preset.tail || " The real band starts much lower than the formula suggests.");
         else if (g > d * 0.5) msg += " The gap is more than half the pin height, so the band is narrow. The thesis’s fences all use a gap of roughly a fifth of the pin height or less.";
         else msg += " Taller pins move the whole band down. A smaller gap pushes the top edge up and widens it.";
       }
@@ -780,11 +783,11 @@
         lines.forEach(function (t, i) { svg("text", { x: AX, y: y + 17 * (i + 1), class: "s-lbl", text: t }, parent); });
       }
       if (narrow) {
-        note(gCell, Y0 + 58, "Stop band of the pins alone", ["about 10 to 23 GHz, ratio quoted as 2.39 : 1", "no curve crosses it: nothing can travel"]);
-        note(gRidge, Y0 + 58, "Usable band with the ridge", ["10.7 to 19.5 GHz, ratio 1.82 : 1", "the red-tinted slices are lost to unwanted waves"]);
+        note(gCell, Y0 + 58, "Stop band of the pins alone", ["about 10 to 23 GHz, about 2.3 : 1 (Chapter 2 pins)", "no curve crosses it: nothing can travel"]);
+        note(gRidge, Y0 + 58, "Usable band with the ridge", ["10.7 to 19.5 GHz, ratio 1.82 : 1 (Chapter 3 square pin)", "the red-tinted slices are lost to unwanted waves"]);
       } else {
-        note(gCell, fy(18), "Stop band of the pins alone", ["about 10 to 23 GHz", "ratio quoted as 2.39 : 1", "no curve crosses it:", "nothing can travel"]);
-        note(gRidge, fy(17), "Usable band with the ridge", ["10.7 to 19.5 GHz", "ratio 1.82 : 1"]);
+        note(gCell, fy(18), "Stop band of the pins alone", ["about 10 to 23 GHz", "about 2.3 : 1 (Chapter 2 pins)", "no curve crosses it:", "nothing can travel"]);
+        note(gRidge, fy(17), "Usable band with the ridge", ["10.7 to 19.5 GHz", "ratio 1.82 : 1", "(Chapter 3 square pin)"]);
         svg("text", { x: AX, y: fy(21), class: "s-lbl", text: "lost to new unwanted waves" }, gRidge);
         svg("text", { x: AX, y: fy(9.2), class: "s-lbl", text: "lost here too" }, gRidge);
       }
@@ -804,7 +807,7 @@
       });
       $("#disp-text").textContent = mode === "cell"
         ? "Pins alone: between about 10 and 23 GHz no curve exists, so no wave can travel through the pins. That is the stop band, and it looks generous."
-        : "With the ridge: the wanted wave appears as a nearly straight line through the gap. But extra unwanted waves (dashed) creep in at both edges. The waveguide is only usable where the wanted wave is alone, 10.7 to 19.5 GHz, so the ratio drops from 2.39 to 1.82.";
+        : "With the ridge: the wanted wave appears as a nearly straight line through the gap. But extra unwanted waves (dashed) creep in at both edges. The waveguide is only usable where the wanted wave is alone. For Chapter 3\u2019s square pin that is 10.7 to 19.5 GHz, and its ratio drops from 2.39 for the pins alone to 1.82.";
     }
     $$("[data-disp]").forEach(function (b) { b.addEventListener("click", function () { set(b.getAttribute("data-disp")); }); });
     onNarrow(build);
@@ -1093,7 +1096,7 @@
 
   /* ------------------------------------------------------------------ ALL RESULTS */
   var RESULTS = [
-    { label: "Main pin fence (Ch. 2)", sub: "what the pins allow", a: 10, b: 23, kind: "sim", note: "Stop band of the pins alone.", page: "p. 32" },
+    { label: "Chapter 2 pin fence", sub: "what the pins allow", a: 10, b: 23, kind: "sim", note: "Stop band of the pins alone.", page: "p. 32" },
     { label: "Old connector, open end", sub: "at −10 dB", a: 12.5, b: 17, kind: "sim", note: "Earlier design, shown for comparison.", page: "p. 17" },
     { label: "Old connector, shorted end", sub: "at −10 dB", a: 11.5, b: 19, kind: "sim", note: "Earlier design, improved.", page: "p. 18" },
     { label: "New five-step connector", sub: "design band", a: 10, b: 25, kind: "meas", note: "Design target 10 to 25 GHz. Back-to-back measurement, plotted from 10 to 23 GHz, stays below −18 dB.", page: "pp. 23, 33–36" },
@@ -1132,9 +1135,9 @@
     { q: "What is a band gap (stop band)?",
       opts: ["The physical air gap between the ridge and the lid", "The range of frequencies a connector reflects", "A range of frequencies that cannot travel through the field of pins", "The distance between two neighbouring pins"],
       right: 2, why: "It is a range of frequencies, not a distance. Inside it the pins act as a fence, so it is also the working band of the waveguide." },
-    { q: "For the main example pins, the quick formulas predict a stop band of 15 to 25 GHz. What does the thesis’s full simulation give?",
-      opts: ["Exactly the same", "About 10 to 23 GHz", "About 20 to 30 GHz", "No stop band at all"],
-      right: 1, why: "The real band starts much lower and is wider (a ratio of about 2.39 instead of 1.67). That gap between formula and reality is why careful analysis and measurement matter." },
+    { q: "For a 5 mm pin under a 1 mm gap, the quick formulas predict a bandwidth ratio of 1.67 to 1. What does the thesis\u2019s full simulation of that pin give?",
+      opts: ["Exactly the same ratio", "A much wider ratio, 2.39 to 1", "A narrower ratio than the formula", "No stop band at all"],
+      right: 1, why: "The simulated ratio is 2.39 to 1, far wider than the formula\u2019s 1.67. The formulas show which way to move, but they are not accurate enough to design with." },
     { q: "A connector has a reflection of −20 dB. How much of the power bounces back?",
       opts: ["20%", "10%", "2%", "1%"],
       right: 3, why: "Every 10 dB is a factor of ten: −10 dB is a tenth, −20 dB is a hundredth, which is 1%." },

@@ -150,7 +150,7 @@
 </section>
 
 <!-- ============================================================ PROBLEM -->
-<section id="problem" class="section">
+<section id="problem" class="section section-tint">
   <div class="col">
     <p class="kicker">The problem it solves</p>
     <h2>Three ways to carry a microwave</h2>
@@ -279,7 +279,7 @@
 
   <div class="col">
     <h3>An honest look at the rule of thumb</h3>
-    <p>Press “Main example”. The quick formulas predict a stop band from 15 to 25 GHz, a ratio of 1.67 to 1. The thesis's full simulation of the same pins gives roughly 10 to 23 GHz <span class="ref">(Ch.&nbsp;2, p.&nbsp;32)</span>, a ratio it later pins down as 2.39 to 1 <span class="ref">(Ch.&nbsp;3, p.&nbsp;73)</span>. Try the other buttons and you will see the same pattern each time: the real band starts well below where the formula says it should.</p>
+    <p>Press “Main example”: a 5&nbsp;mm pin under a 1&nbsp;mm gap, the dimensions in the thesis's Table&nbsp;3.2. The quick formulas predict a stop band from 15 to 25 GHz, a ratio of 1.67 to 1. The thesis's full simulation of that pin gives a far wider ratio, 2.39 to 1 <span class="ref">(Ch.&nbsp;3, p.&nbsp;73)</span>. Chapter&nbsp;2 simulates pins with the same spacing, width and gap and reports a stop band of roughly 10 to 23 GHz <span class="ref">(Ch.&nbsp;2, p.&nbsp;32)</span>. That is the hatched bar. It is probably the same pin, but the thesis never states the Chapter&nbsp;2 pin height, so this page does not claim it. Try the other buttons and you will see the same pattern each time: the real band starts well below where the formula says it should.</p>
     <p>The formulas are still useful. They tell you which way to move: taller pins shift the whole band down, and a smaller gap stretches it wider. But they are not good enough to design with. That is why a whole chapter of the thesis is spent on working out, and for the first time actually measuring, where the band really is.</p>
 
     <details class="deeper">
@@ -321,7 +321,7 @@
 
     <p>A bad adapter bounces part of the signal back, the way a sudden step in a corridor trips people up. Getting waves across a junction without bounce is called <a class="term" href="#g-matching">matching</a>. How much bounces back is quoted in <a class="term" href="#g-db">decibels (dB)</a>: −10&nbsp;dB means a tenth of the power is reflected, −20&nbsp;dB means a hundredth. More negative is better.</p>
 
-    <p>Here was the problem. The pin fence in the thesis's main example works from about 10 to 23&nbsp;GHz. But the usual adapter, a simple probe poking into a hole in the ridge, only matched well across about a third of that range <span class="ref">(Ch.&nbsp;1, p.&nbsp;11)</span>. It was like building a six-lane motorway and then reaching it by a single-lane ramp.</p>
+    <p>Here was the problem. The pin fence used in this chapter works from about 10 to 23&nbsp;GHz. But the usual adapter, a simple probe poking into a hole in the ridge, only matched well across about a third of that range <span class="ref">(Ch.&nbsp;1, p.&nbsp;11)</span>. It was like building a six-lane motorway and then reaching it by a single-lane ramp.</p>
   </div>
 
   <figure class="fig fig-wide" id="ch2-fig" aria-labelledby="ch2-cap">
@@ -402,7 +402,7 @@
 </section>
 
 <!-- ============================================================ CH 3 -->
-<section id="ch3" class="section">
+<section id="ch3" class="section section-tint">
   <div class="col">
     <p class="kicker">Chapter 3 · Knowing the fence</p>
     <h2>Measuring a band gap that nobody had measured</h2>
@@ -462,7 +462,7 @@
       </div>
     </div>
     <div class="status" role="status" aria-live="polite"><p id="disp-text"></p></div>
-    <figcaption id="disp-cap">How to read it: pick a frequency on the left and look across. If you hit a curve, a wave of that frequency can travel. If you hit nothing, it cannot. The curve shapes are sketched to show the idea. The band edges are the thesis's values for its main square-pin example <span class="ref">(Ch.&nbsp;2, p.&nbsp;32; Ch.&nbsp;3, pp.&nbsp;73, 87)</span>.</figcaption>
+    <figcaption id="disp-cap">How to read it: pick a frequency on the left and look across. If you hit a curve, a wave of that frequency can travel. If you hit nothing, it cannot. The curve shapes are sketched to show the idea. “Pins alone” uses the stop band Chapter&nbsp;2 reports <span class="ref">(p.&nbsp;32)</span>. “With the ridge” uses Chapter&nbsp;3's numbers for a square pin with the same spacing, width and gap <span class="ref">(pp.&nbsp;73, 87)</span>. The thesis does not say whether the two chapters use the identical pin.</figcaption>
   </figure>
 
   <div class="col">
@@ -562,7 +562,7 @@
 </section>
 
 <!-- ============================================================ CH 5 -->
-<section id="ch5" class="section">
+<section id="ch5" class="section section-tint">
   <div class="col">
     <p class="kicker">Chapter 5 · One-way traffic</p>
     <h2>The circulator: a roundabout where you must take the first exit</h2>
