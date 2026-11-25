@@ -500,7 +500,7 @@
   // Note: "main" uses Table 3.2's dimensions; its 10-23 GHz band is Chapter 2's result for pins with the same
   // spacing, width and gap. The thesis does not state the Chapter 2 pin height, so the two are not called identical.
   var FENCES = {
-    main:    { d: 5,   h: 1,     sim: [10, 23],   what: "Chapter 2\u2019s pins, which share this spacing, width and gap (their height is not stated)", sub: "Ch. 2 pins, same spacing and gap", page: "Ch. 2, p. 32",
+    main:    { d: 5,   h: 1,     sim: [10, 23],   what: "Chapter 2\u2019s pins (same spacing, width and gap; height not stated)", sub: "Ch. 2 pins, same spacing and gap", page: "Ch. 2, p. 32",
                extra: " For exactly these dimensions (Table 3.2), Chapter 3 quotes a simulated ratio of 2.39 : 1 (p. 73).", tail: " Either way, the real band is far wider than the formula\u2019s 1.67 : 1." },
     test:    { d: 3,   h: 0.5,   sim: [17, 39],   what: "a waveguide built from these pins", page: "Ch. 3, pp. 63, 70" },
     coupler: { d: 4.7, h: 1,     sim: [11, 25],   what: "pins alone", page: "Ch. 4, pp. 100–102" },
