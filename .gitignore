@@ -1,0 +1,24 @@
+# Source PDFs never belong in this repository
+*.pdf
+*.PDF
+
+# OS junk
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.cursor/
+
+# Local tooling
+node_modules/
+test-results/
+playwright-report/
+*.log
