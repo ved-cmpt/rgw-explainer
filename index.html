@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to trap a microwave on a metal ridge: ridge gap waveguides, explained</title>
+<meta name="description" content="An interactive, beginner-friendly explainer of a PhD thesis on ridge gap waveguide technology: play with waves, pin fences, a one-way roundabout for signals, and a beam-steering antenna.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="How to trap a microwave on a metal ridge">
+<meta property="og:description" content="An interactive, beginner-friendly explainer of a PhD thesis on ridge gap waveguides.">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23162033'/%3E%3Cpath d='M3 16c3-9 6-9 9 0s6 9 9 0 5-7 8-2' fill='none' stroke='%23ff8a4c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script>
+  // Apply a saved theme choice before first paint (falls back to the system setting).
+  (function () {
+    try {
+      var t = localStorage.getItem("rgw-theme");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+    document.documentElement.classList.add("js");
+  })();
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+<noscript><p class="noscript">The interactive diagrams on this page need JavaScript. The text, glossary and tables still work without it.</p></noscript>
+
+<header class="topbar" id="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top" aria-label="Back to the top">
+      <svg viewBox="0 0 40 20" width="34" height="17" aria-hidden="true"><path d="M2 10c3-9 6-9 9 0s6 9 9 0 6-9 9 0 5 6 9 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span>Ridge gap waveguides, explained</span>
+    </a>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#start">Start here</a>
+      <a href="#problem">The problem</a>
+      <a href="#fence">The wave fence</a>
+      <a href="#journey">Thesis tour</a>
+      <a href="#results">All results</a>
+      <a href="#critique">Critical take</a>
+      <a href="#glossary">Glossary</a>
+      <a href="#quiz">Quiz</a>
+    </nav>
+    <button class="theme-btn" id="theme-btn" type="button" aria-label="Switch between light and dark mode">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-.9-.1-1.4A6.5 6.5 0 0 1 12 3z" fill="currentColor"/></svg>
+      <span class="theme-btn-label">Theme</span>
+    </button>
+  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+</header>
+
+<main id="main">
+
+<!-- ============================================================ HERO -->
+<section class="hero" id="top">
+  <div class="col">
+    <p class="eyebrow">An interactive explainer of a PhD thesis</p>
+    <h1>How to trap a microwave on a metal ridge</h1>
+    <p class="lede">Phones, radar and satellites all talk using microwaves. Inside the equipment those waves have to be carried from one part to another without leaking away. This page is about a clever way to do that: let the wave ride in a thin slice of air above a metal ridge, and plant a forest of metal pins on both sides so it has nowhere else to go.</p>
+    <p class="credit">Based on: Shokry I. Shamseldin, <cite>Analysis and Design of Microwave Devices Based on Ridge Gap Waveguide Technology</cite>, PhD thesis, Concordia University, Montréal, 2016. Supervisor: Dr. Ahmed A. Kishk. <a href="https://spectrum.library.concordia.ca/id/eprint/981921/" rel="noopener">Official thesis record</a>. This is an independent student explainer, not affiliated with or endorsed by the author or the university.</p>
+  </div>
+
+  <figure class="fig fig-wide" id="hero-fig" aria-labelledby="hero-cap">
+    <div class="fig-frame">
+      <span class="tag tag-toy">Simplified illustration</span>
+      <canvas id="hero-canvas" class="hero-canvas" role="img" aria-label="Top-down view of a ridge gap waveguide. A metal ridge runs left to right through a grid of square metal pins. Coloured wave crests travel along the ridge. Depending on the frequency and gap you choose, the wave either stays on the ridge or spreads out into the pins."></canvas>
+      <div class="hero-legend" aria-hidden="true">
+        <span><i class="sw sw-crest"></i>wave crest</span>
+        <span><i class="sw sw-trough"></i>wave trough</span>
+        <span><i class="sw sw-metal"></i>metal ridge and pins, seen from above (lid removed)</span>
+      </div>
+    </div>
+
+    <div class="controls hero-controls">
+      <div class="control control-wide">
+        <label for="hero-freq">Frequency <output id="hero-freq-out" for="hero-freq">15 GHz</output></label>
+        <div class="bandstrip" id="hero-bandstrip" aria-hidden="true">
+          <div class="bandstrip-band" id="hero-band"></div>
+          <span class="bandstrip-label" id="hero-band-label">stop band</span>
+        </div>
+        <input type="range" id="hero-freq" min="2" max="35" step="0.5" value="15">
+        <div class="scale scale-pos" aria-hidden="true"><span style="left:0%">2</span><span style="left:24.24%">10</span><span style="left:54.55%">20</span><span class="hide-sm" style="left:84.85%">30</span><span style="left:100%">35 GHz</span></div>
+      </div>
+      <div class="control">
+        <label for="hero-gap">Air gap under the lid <output id="hero-gap-out" for="hero-gap">1 mm</output></label>
+        <input type="range" id="hero-gap" min="0.25" max="6" step="0.25" value="1">
+        <div class="scale" aria-hidden="true"><span>0.25</span><span>6 mm</span></div>
+      </div>
+      <div class="control control-buttons">
+        <span class="control-title" id="hero-preset-title">Try</span>
+        <div class="btnrow" role="group" aria-labelledby="hero-preset-title">
+          <button type="button" class="chip" data-hero-preset="5">5 GHz</button>
+          <button type="button" class="chip" data-hero-preset="15">15 GHz</button>
+          <button type="button" class="chip" data-hero-preset="30">30 GHz</button>
+          <button type="button" class="chip chip-ghost" id="hero-play" aria-pressed="true">Pause</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="status" id="hero-status" role="status" aria-live="polite">
+      <div class="status-head"><span class="status-dot" id="hero-dot"></span><strong id="hero-verdict">Trapped</strong>
+        <span class="meter" aria-hidden="true"><span class="meter-label">Signal reaching the far end</span><span class="meter-track"><span class="meter-fill" id="hero-meter"></span></span></span>
+      </div>
+      <p id="hero-text">15 GHz sits inside this pin fence's stop band, so the wave cannot spread sideways. It stays on the ridge.</p>
+    </div>
+
+    <figcaption id="hero-cap">Drag the sliders. The example fence blocks sideways travel between about 10 and 23 GHz when the gap is 1&nbsp;mm <span class="ref">(thesis Ch.&nbsp;1–2)</span>. Everything else in this animation (how fast it leaks, how the band moves with the gap) is toy physics chosen to show the idea, not a simulation.</figcaption>
+  </figure>
+</section>
+
+<!-- ============================================================ START HERE -->
+<section id="start" class="section">
+  <div class="col">
+    <p class="kicker">Start here</p>
+    <h2>What is a microwave signal, and why does it need a guide?</h2>
+
+    <p>Drop a pebble in a pond and ripples spread out. A <a class="term" href="#g-microwave">microwave</a> is the same kind of thing, except the ripples are in electric and magnetic fields instead of water, and they move at the speed of light. Your phone, Wi-Fi, weather radar, satellite TV and 5G networks all send information by making these ripples wiggle in agreed patterns.</p>
+
+    <p>Two words describe any wave. <a class="term" href="#g-frequency">Frequency</a> is how many times it wiggles each second. <a class="term" href="#g-wavelength">Wavelength</a> is the distance from one crest to the next. They are tied together: wiggle faster and the crests bunch up. Think of a piano. High notes come from short strings, low notes from long ones.</p>
+
+    <figure class="fig" id="ruler-fig" aria-labelledby="ruler-cap">
+      <div class="fig-frame">
+        <svg id="ruler-svg" viewBox="0 0 640 170" role="img" aria-label="A wave drawn above a ruler marked in centimetres. The wave's length changes with the frequency slider."></svg>
+      </div>
+      <div class="controls">
+        <div class="control control-wide">
+          <label for="ruler-freq">Frequency <output id="ruler-freq-out" for="ruler-freq">15 GHz</output></label>
+          <input type="range" id="ruler-freq" min="3" max="35" step="0.5" value="15">
+          <div class="scale" aria-hidden="true"><span>3</span><span>35 GHz</span></div>
+        </div>
+      </div>
+      <div class="status" role="status" aria-live="polite"><p id="ruler-text"></p></div>
+      <figcaption id="ruler-cap">Wavelength is simply the speed of light divided by frequency. At the frequencies in this thesis, one wave is about as long as a fingertip is wide, so the metal parts that guide it have to be machined at millimetre scale.</figcaption>
+    </figure>
+
+    <p>The thesis works with waves around 10 to 30 <a class="term" href="#g-ghz">GHz</a> (a gigahertz is a billion wiggles per second). The whole microwave range runs from 300&nbsp;MHz to 300&nbsp;GHz <span class="ref">(Ch.&nbsp;1, p.&nbsp;2)</span>.</p>
+
+    <h3>Why guide it?</h3>
+    <p>A wave left alone spreads out in every direction, like water from a sprinkler. That is perfect for an antenna that has to reach many phones. It is terrible inside a radar or a phone tower, where the signal must travel from the chip that creates it to the antenna that launches it and arrive with its energy intact. There you want a garden hose, not a sprinkler. Engineers call the hose a <a class="term" href="#g-waveguide">waveguide</a> or a transmission line.</p>
+
+    <div class="callout">
+      <p class="callout-title">The whole thesis in three sentences</p>
+      <p>The usual hoses for microwaves either waste energy or are hard to build at high frequencies. A newer design, the <a class="term" href="#g-rgw">ridge gap waveguide</a>, avoids both problems by fencing the wave in with rows of metal pins instead of solid walls. The thesis works out how to plug signals into it, how to measure and widen the range of frequencies it can carry, and then builds useful parts with it: a splitter, a coupler, a one-way junction, a fabric tester and an antenna.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ PROBLEM -->
+<section id="problem" class="section">
+  <div class="col">
+    <p class="kicker">The problem it solves</p>
+    <h2>Three ways to carry a microwave</h2>
+    <p>Imagine slicing through each kind of “hose” and looking at the cut end. The orange glow shows where the wave's energy travels.</p>
+  </div>
+
+  <figure class="fig fig-wide" id="problem-fig" aria-labelledby="problem-cap">
+    <div class="trio">
+      <article class="card xsec" id="xs-microstrip">
+        <h3>Microstrip</h3>
+        <svg viewBox="0 0 240 150" role="img" aria-label="Cross-section of a microstrip line: a thin metal strip on top of a circuit board, with a metal sheet underneath. The wave travels inside the board material between them.">
+          <rect class="x-diel" x="20" y="78" width="200" height="34"/>
+          <rect class="x-metal" x="20" y="112" width="200" height="8" rx="1"/>
+          <rect class="x-metal" x="92" y="71" width="56" height="7" rx="1"/>
+          <ellipse class="x-field" cx="120" cy="95" rx="38" ry="15"/>
+          <g class="x-heat"><path d="M70 66q4-6 0-12t0-12"/><path d="M120 60q4-6 0-12t0-12"/><path d="M170 66q4-6 0-12t0-12"/></g>
+          <text class="x-lbl" x="120" y="138" text-anchor="middle">wave travels inside the board</text>
+        </svg>
+        <p><strong>A metal strip on a circuit board.</strong> Cheap and flat. But the wave travels through the board material and some escapes upward, like running through wet sand. The higher the frequency, the more energy is lost.</p>
+        <p class="verdict verdict-bad"><span class="vdot"></span>Easy to make, wasteful at high frequency</p>
+      </article>
+
+      <article class="card xsec" id="xs-hollow">
+        <h3>Hollow metal waveguide</h3>
+        <svg viewBox="0 0 240 150" role="img" aria-label="Cross-section of a hollow rectangular metal pipe made from two halves bolted together. The wave travels in the air inside. With an imperfect joint, energy leaks out through the seams.">
+          <path class="x-metal" d="M40 30h160v44h-10V40H50v34H40z"/>
+          <path class="x-metal x-lower" d="M40 76h10v34h140V76h10v44H40z"/>
+          <ellipse class="x-field" cx="120" cy="75" rx="48" ry="24"/>
+          <g class="x-leak"><path d="M38 75h-22"/><path d="M36 69l-18-9"/><path d="M36 81l-18 9"/><path d="M202 75h22"/><path d="M204 69l18-9"/><path d="M204 81l18 9"/></g>
+          <text class="x-lbl" x="120" y="138" text-anchor="middle">two halves must touch perfectly</text>
+        </svg>
+        <p><strong>A metal pipe.</strong> The wave travels in air, so very little is lost. But the pipe is machined as two halves, and they must press together with perfect electrical contact along the whole seam. At millimetre sizes that is hard and expensive.</p>
+        <p class="verdict" id="hollow-verdict"><span class="vdot"></span><span id="hollow-verdict-text">Low loss, if the seam is perfect</span></p>
+      </article>
+
+      <article class="card xsec" id="xs-rgw">
+        <h3>Ridge gap waveguide</h3>
+        <svg viewBox="0 0 240 150" role="img" aria-label="Cross-section of a ridge gap waveguide: a flat metal lid floats above a metal base. The base carries a wide ridge in the middle and rows of pins on both sides. The wave travels in the thin air gap between the ridge and the lid.">
+          <rect class="x-metal" x="20" y="28" width="200" height="9" rx="1"/>
+          <rect class="x-metal" x="20" y="112" width="200" height="9" rx="1"/>
+          <rect class="x-metal" x="98" y="46" width="44" height="66"/>
+          <rect class="x-metal x-pin" x="34" y="46" width="14" height="66"/>
+          <rect class="x-metal x-pin" x="64" y="46" width="14" height="66"/>
+          <rect class="x-metal x-pin" x="162" y="46" width="14" height="66"/>
+          <rect class="x-metal x-pin" x="192" y="46" width="14" height="66"/>
+          <rect class="x-field x-field-gap" x="96" y="36.5" width="48" height="10" rx="4"/>
+          <g class="x-stop"><path d="M84 41.5h-8m-4 0h-8"/><path d="M156 41.5h8m4 0h8"/></g>
+          <text class="x-lbl" x="120" y="138" text-anchor="middle">open gap: lid never touches</text>
+        </svg>
+        <p><strong>A ridge, a lid, and a pin fence.</strong> The wave rides in the air gap above the ridge, so losses stay low. The lid simply hovers. Nothing has to touch, because the pins stop the wave from wandering off sideways.</p>
+        <p class="verdict verdict-good"><span class="vdot"></span><span id="rgw-verdict-text">Low loss, no contact needed</span></p>
+      </article>
+    </div>
+    <div class="controls controls-center">
+      <label class="switch"><input type="checkbox" id="crack-toggle"><span class="switch-track" aria-hidden="true"></span><span>Simulate an imperfect joint between the halves</span></label>
+    </div>
+    <figcaption id="problem-cap">Flip the switch. A hairline gap in the hollow pipe's seam lets energy escape. The ridge gap waveguide was designed with an open gap from the start, so there is no seam to fail <span class="ref">(thesis abstract; Ch.&nbsp;1, pp.&nbsp;6–7)</span>. <span class="tag tag-toy tag-inline">Simplified illustration</span></figcaption>
+  </figure>
+
+  <div class="col">
+    <details class="deeper">
+      <summary>Go deeper: what the thesis says about losses and modes</summary>
+      <p>The thesis compares the ridge gap waveguide (RGW) mainly with <a class="term" href="#g-microstrip">microstrip</a> and with the substrate-integrated waveguide (a pipe built inside a circuit board). In both of those the signal passes through a solid insulating material, which absorbs some of it. In the RGW the signal travels in air, so that loss disappears <span class="ref">(Ch.&nbsp;1, pp.&nbsp;3, 7)</span>.</p>
+      <p>The RGW also carries a wave pattern called <a class="term" href="#g-tem">quasi-TEM</a>, in which all frequencies travel at nearly the same speed. A hollow pipe cannot do that: its speed changes with frequency, which smears sharp pulses. Engineers call that smearing <a class="term" href="#g-dispersion">dispersion</a>.</p>
+      <p>The idea itself is not from this thesis. It was published by Kildal in 2009 <span class="ref">(Ch.&nbsp;1, p.&nbsp;6)</span>. The thesis's contribution is to make the technology practical: connectors, measurement methods, design recipes and working parts. Its author describes the work as <q>a step towards the standardization of this technology</q> <span class="ref">(abstract)</span>.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================ FENCE -->
+<section id="fence" class="section">
+  <div class="col">
+    <p class="kicker">The wave fence</p>
+    <h2>How can a row of pins stop a wave?</h2>
+
+    <p>Solid walls would obviously keep a wave in. Pins with air between them look like they should let it straight through. The trick is in their height.</p>
+
+    <p>Picture two kinds of mirror. An ordinary metal sheet reflects a wave and flips it upside down. A second, special kind of surface reflects a wave <em>without</em> flipping it. Put one of each face to face and a wave trying to travel between them needs a certain amount of room: at least a quarter of its wavelength. Squeeze the two surfaces closer than that and no wave fits. The space between them goes dark.</p>
+
+    <p>The ordinary mirror is the metal lid, which engineers idealise as a <a class="term" href="#g-pec">perfect electric conductor (PEC)</a>. The special mirror does not exist in nature, but a “<a class="term" href="#g-nails">bed of nails</a>” imitates one. When each pin is about a quarter of a wavelength tall, the tops of the pins together behave like a <a class="term" href="#g-pmc">perfect magnetic conductor (PMC)</a>: the non-flipping mirror.</p>
+
+    <p>So on both sides of the ridge there is a lid above, pin-tops below, and a gap too thin for any wave to fit. Above the ridge itself it is plain metal facing plain metal, and a wave travels happily between those. The wave has exactly one path it can take.</p>
+
+    <p>Because the trick depends on the pins being the right height <em>compared with the wavelength</em>, it only works over a range of frequencies. That range is the <a class="term" href="#g-bandgap">band gap</a>, also called the stop band. It is the single most important number for a ridge gap waveguide, because the waveguide only works inside it.</p>
+  </div>
+
+  <figure class="fig fig-wide" id="fence-fig" aria-labelledby="fence-cap">
+    <div class="fig-frame fence-frame">
+      <span class="tag tag-rule">Rule-of-thumb calculator</span>
+      <div class="fence-grid">
+        <svg id="fence-svg" viewBox="0 0 300 250" role="img" aria-label="Side view of one pin under the lid, drawn to scale with the pin height and gap you choose."></svg>
+        <div class="fence-out">
+          <div class="readouts">
+            <div class="readout"><span class="readout-k">Fence starts working near</span><span class="readout-v" id="fence-f1">15.0 GHz</span><span class="readout-n">pin = quarter wavelength</span></div>
+            <div class="readout"><span class="readout-k">Fence fails above about</span><span class="readout-v" id="fence-f2">25.0 GHz</span><span class="readout-n">pin + gap = half wavelength</span></div>
+            <div class="readout"><span class="readout-k">Bandwidth ratio</span><span class="readout-v" id="fence-ratio">1.67 : 1</span><span class="readout-n">top frequency ÷ bottom frequency</span></div>
+          </div>
+          <div class="axis-chart" id="fence-axis" role="img" aria-label="Frequency axis showing the calculated stop band."></div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="control">
+        <label for="fence-d"><span>Pin height <var>d</var></span> <output id="fence-d-out" for="fence-d">5.0 mm</output></label>
+        <input type="range" id="fence-d" min="2" max="10" step="0.1" value="5">
+        <div class="scale" aria-hidden="true"><span>2</span><span>10 mm</span></div>
+      </div>
+      <div class="control">
+        <label for="fence-h"><span>Air gap <var>h</var></span> <output id="fence-h-out" for="fence-h">1.00 mm</output></label>
+        <input type="range" id="fence-h" min="0.1" max="6" step="0.025" value="1">
+        <div class="scale" aria-hidden="true"><span>0.1</span><span>6 mm</span></div>
+      </div>
+      <div class="control control-buttons control-wide">
+        <span class="control-title" id="fence-preset-title">Pin fences used in the thesis</span>
+        <div class="btnrow" role="group" aria-labelledby="fence-preset-title">
+          <button type="button" class="chip" data-fence-preset="main">Main example (Table 3.2)</button>
+          <button type="button" class="chip" data-fence-preset="test">Ch. 3 test fence</button>
+          <button type="button" class="chip" data-fence-preset="coupler">Coupler fence</button>
+          <button type="button" class="chip" data-fence-preset="divider">Power divider fence</button>
+        </div>
+      </div>
+    </div>
+    <div class="status" role="status" aria-live="polite"><p id="fence-text"></p></div>
+    <figcaption id="fence-cap">The solid bar uses two quick formulas from the thesis <span class="ref">(Ch.&nbsp;3, Sec.&nbsp;3.2.2)</span>. The hatched bar, shown for the thesis's own fences, is what a full computer simulation found. They do not agree, and that disagreement is the point of the next paragraph.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>An honest look at the rule of thumb</h3>
+    <p>Press “Main example”. The quick formulas predict a stop band from 15 to 25 GHz, a ratio of 1.67 to 1. The thesis's full simulation of the same pins gives roughly 10 to 23 GHz <span class="ref">(Ch.&nbsp;2, p.&nbsp;32)</span>, a ratio it later pins down as 2.39 to 1 <span class="ref">(Ch.&nbsp;3, p.&nbsp;73)</span>. Try the other buttons and you will see the same pattern each time: the real band starts well below where the formula says it should.</p>
+    <p>The formulas are still useful. They tell you which way to move: taller pins shift the whole band down, and a smaller gap stretches it wider. But they are not good enough to design with. That is why a whole chapter of the thesis is spent on working out, and for the first time actually measuring, where the band really is.</p>
+
+    <details class="deeper">
+      <summary>Go deeper: the two formulas and the quarter-wave idea</summary>
+      <p>With <var>c</var> the speed of light, <var>d</var> the pin height and <var>h</var> the gap above the pin:</p>
+      <p class="eq"><var>f</var><sub>ideal PMC</sub> ≈ <var>c</var> / (4<var>d</var>)&emsp;&emsp;<var>f</var><sub>upper</sub> ≈ <var>c</var> / (2(<var>d</var> + <var>h</var>))</p>
+      <p>The first says the pin-top surface is an ideal magnetic conductor at the frequency where the pin is a quarter wavelength tall. The reason is that a wave running down the space between pins hits the metal floor, flips, and runs back up. Down and back is half a wavelength, another flip. Two flips cancel, so the wave returns to the top the same way up as it left: a non-flipping mirror.</p>
+      <p>The second says trouble starts when the whole cavity (pin plus gap) is half a wavelength tall, because a new wave pattern then fits in between the pins and can carry energy away.</p>
+      <p>Dividing one by the other gives a ratio of 2<var>d</var>/(<var>d</var>+<var>h</var>). It can never reach 2, and it drops to 1 (no band at all) when the gap is as tall as the pin. Real pin surfaces do better than this estimate, since they act “magnetic enough” well before the pins reach a full quarter wavelength. The thesis also states the basic requirement that the gap be smaller than a quarter wavelength <span class="ref">(abstract)</span>, and that practical pin surfaces reach about 2.5 to 1, with some designs above 3 to 1.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================ JOURNEY -->
+<section id="journey" class="section section-tint">
+  <div class="col">
+    <p class="kicker">Thesis tour</p>
+    <h2>Follow the signal through the thesis</h2>
+    <p>The rest of the thesis follows a signal on its way through a ridge gap waveguide system. Each stop is a chapter. Jump to any of them, or just keep scrolling.</p>
+  </div>
+  <nav class="journey" aria-label="Thesis chapters">
+    <ol>
+      <li><a href="#ch2"><span class="st-dot">2</span><span class="st-name">Getting in and out</span><span class="st-sub">Connectors that do not waste the band</span></a></li>
+      <li><a href="#ch3"><span class="st-dot">3</span><span class="st-name">Knowing the fence</span><span class="st-sub">Measuring the band gap, better pin shapes</span></a></li>
+      <li><a href="#ch4"><span class="st-dot">4</span><span class="st-name">Splitting and sharing</span><span class="st-sub">A power divider and a coupler</span></a></li>
+      <li><a href="#ch5"><span class="st-dot">5</span><span class="st-name">One-way traffic</span><span class="st-sub">The circulator</span></a></li>
+      <li><a href="#ch6"><span class="st-dot">6</span><span class="st-name">Putting it to work</span><span class="st-sub">Testing fabric, steering a beam</span></a></li>
+    </ol>
+  </nav>
+</section>
+
+<!-- ============================================================ CH 2 -->
+<section id="ch2" class="section">
+  <div class="col">
+    <p class="kicker">Chapter 2 · Getting in and out</p>
+    <h2>A wide road is useless with a narrow on-ramp</h2>
+
+    <p>Lab instruments and other equipment do not speak “ridge gap waveguide”. They use standard plugs, most often a <a class="term" href="#g-coax">coaxial</a> connector like a tiny, precise version of the one on a TV cable. To use the waveguide at all you need an adapter from one to the other. Engineers call that adapter a <a class="term" href="#g-transition">transition</a>.</p>
+
+    <p>A bad adapter bounces part of the signal back, the way a sudden step in a corridor trips people up. Getting waves across a junction without bounce is called <a class="term" href="#g-matching">matching</a>. How much bounces back is quoted in <a class="term" href="#g-db">decibels (dB)</a>: −10&nbsp;dB means a tenth of the power is reflected, −20&nbsp;dB means a hundredth. More negative is better.</p>
+
+    <p>Here was the problem. The pin fence in the thesis's main example works from about 10 to 23&nbsp;GHz. But the usual adapter, a simple probe poking into a hole in the ridge, only matched well across about a third of that range <span class="ref">(Ch.&nbsp;1, p.&nbsp;11)</span>. It was like building a six-lane motorway and then reaching it by a single-lane ramp.</p>
+  </div>
+
+  <figure class="fig fig-wide" id="ch2-fig" aria-labelledby="ch2-cap">
+    <div class="fig-frame">
+      <div class="chart-head">
+        <h3 class="chart-title">How much of the available band each connector actually uses</h3>
+        <div class="legend" aria-hidden="true">
+          <span><i class="lg lg-meas"></i>Measured on real hardware</span>
+          <span><i class="lg lg-sim"></i>Computer simulation</span>
+          <span><i class="lg lg-ref"></i>Airborne radar bands the project targets</span>
+        </div>
+      </div>
+      <div class="bandchart" id="ch2-chart"></div>
+    </div>
+    <figcaption id="ch2-cap">Frequency ranges in GHz, all from Chapter&nbsp;2 of the thesis. The old connectors are judged at a lenient −10&nbsp;dB reflection level. The new connector is judged at a stricter −15&nbsp;dB and still spans the whole band. The finished waveguide's own lower limit, about 12.5&nbsp;GHz, comes from having only a few rows of pins, not from the connector.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>The new connector: a staircase instead of a cliff</h3>
+    <p>The thesis's adapter changes the shape of the metal gradually, in five small steps, rather than in one jump. Each step causes a tiny reflection, and the step sizes are chosen so that those reflections mostly cancel each other across the whole band. (The recipe for choosing the sizes is named after the mathematician Chebyshev.)</p>
+
+    <figure class="fig fig-inline" aria-labelledby="stair-cap">
+      <div class="fig-scroll" tabindex="0" role="group" aria-label="Sketch of the new connector. Scroll sideways on small screens.">
+      <svg viewBox="0 0 640 170" role="img" aria-label="Side-view sketch of the new connector: a coaxial plug on the left, five metal steps of slowly changing height, a tapered fitting section, then the ridge with pins on the right.">
+        <rect class="x-metal" x="20" y="24" width="600" height="10" rx="2"/>
+        <rect class="x-metal" x="20" y="136" width="600" height="10" rx="2"/>
+        <rect class="x-metal x-pin" x="52" y="2" width="10" height="24"/>
+        <rect class="x-diel" x="44" y="6" width="26" height="18"/>
+        <rect class="x-metal" x="54" y="2" width="6" height="74"/>
+        <rect class="x-metal" x="40" y="76" width="34" height="60"/>
+        <rect class="x-metal" x="74" y="56" width="40" height="80"/>
+        <rect class="x-metal" x="114" y="64" width="40" height="72"/>
+        <rect class="x-metal" x="154" y="78" width="40" height="58"/>
+        <rect class="x-metal" x="194" y="90" width="40" height="46"/>
+        <rect class="x-metal" x="234" y="96" width="40" height="40"/>
+        <path class="x-metal" d="M274 96L400 58v78H274z"/>
+        <rect class="x-metal" x="400" y="58" width="220" height="78"/>
+        <rect class="x-field x-field-gap" x="74" y="38" width="546" height="14" rx="6" opacity=".55"/>
+        <text class="x-lbl" x="57" y="164" text-anchor="middle">coax plug</text>
+        <text class="x-lbl" x="174" y="164" text-anchor="middle">five matching steps</text>
+        <text class="x-lbl" x="337" y="164" text-anchor="middle">fitting section</text>
+        <text class="x-lbl" x="510" y="164" text-anchor="middle">ridge of the waveguide</text>
+        <g class="x-brace"><path d="M76 150h196"/><path d="M276 150h122"/><path d="M402 150h216"/></g>
+      </svg>
+      </div>
+      <figcaption id="stair-cap">A sketch of the idea, not to scale and not the thesis's drawing. The thesis lists every step's dimensions in its Tables&nbsp;2.1 and 2.2.</figcaption>
+    </figure>
+
+    <p>It comes in two pieces. The first piece does the hard work and contains the coaxial plug. The second, a short tapered “fitting section”, adapts to whichever ridge waveguide is being tested. It costs about half as much as the first and can be remade for a different waveguide without redoing everything <span class="ref">(Ch.&nbsp;2, p.&nbsp;21)</span>.</p>
+
+    <ul class="results">
+      <li><span class="badge badge-meas">Measured</span> Two of the new adapters connected back to back reflect less than −18&nbsp;dB (under 2% of the power) across the band, and lose only about 0.15&nbsp;dB <span class="ref">(pp.&nbsp;33–35)</span>.</li>
+      <li><span class="badge badge-meas">Measured</span> With a length of ridge gap waveguide between them, the measured and simulated curves agree closely, and the total loss is 0.1 to 0.3&nbsp;dB, which is roughly 2% to 7% of the power <span class="ref">(p.&nbsp;35)</span>.</li>
+      <li><span class="badge badge-sim">Simulated</span> A second adapter goes from a <a class="term" href="#g-microstrip">microstrip</a> circuit board straight onto the ridge. The thesis reports simulated results for this one, with reflections around −20&nbsp;dB <span class="ref">(pp.&nbsp;37–45)</span>.</li>
+    </ul>
+
+    <details class="deeper">
+      <summary>Go deeper: decibels, and what “matching better than −15 dB” means</summary>
+      <p>A decibel value is a compact way to write a ratio of powers. Slide to convert.</p>
+      <div class="controls controls-plain">
+        <div class="control control-wide">
+          <label for="db-in">Reflection level <output id="db-out" for="db-in">−15 dB</output></label>
+          <input type="range" id="db-in" min="-30" max="-3" step="1" value="-15">
+          <div class="scale" aria-hidden="true"><span>−30 dB</span><span>−3 dB</span></div>
+        </div>
+      </div>
+      <div class="dbbar" aria-hidden="true"><div class="dbbar-refl" id="db-refl"></div></div>
+      <p id="db-text" role="status" aria-live="polite"></p>
+      <p>The conversion is: fraction of power = 10<sup>(dB ÷ 10)</sup>. The thesis argues that the commonly used −10&nbsp;dB level is too lenient for a connector and adopts −15&nbsp;dB for a pair of connectors, which means each single connector must be better than about −20&nbsp;dB <span class="ref">(Ch.&nbsp;2, pp.&nbsp;17, 29)</span>. Judged at −15&nbsp;dB, the two older designs cover only 23% and 34% bandwidth.</p>
+    </details>
+
+    <details class="deeper">
+      <summary>Go deeper: the circuit-board adapter and its “Swiss cheese” trick</summary>
+      <p>A wave on a circuit board travels through the board material, which slows it down. How strongly a material does this is its <a class="term" href="#g-permittivity">relative permittivity</a>: 1 for air, 1.96 for the low-density board used here. Going directly from 1.96 to 1 is a step that causes reflections.</p>
+      <p>The thesis softens the step by drilling a pattern of tiny holes into two short sections of the same board. More hole means more air, so the section behaves like a material in between. The two sections are tuned to effective values of 1.8 and 1.58. With the drill sizes available, anything from about 1.45 to 1.9 was reachable <span class="ref">(Ch.&nbsp;2, pp.&nbsp;40–44)</span>.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================ CH 3 -->
+<section id="ch3" class="section">
+  <div class="col">
+    <p class="kicker">Chapter 3 · Knowing the fence</p>
+    <h2>Measuring a band gap that nobody had measured</h2>
+
+    <p>Before this thesis, everyone worked out a pin fence's stop band the same way: draw one pin in a computer, tell the software to pretend it repeats forever in every direction, and ask which waves can exist. (Engineers call that single pin with its surroundings a <a class="term" href="#g-cell">unit cell</a>, each possible wave pattern a <a class="term" href="#g-mode">mode</a>, and this kind of calculation an <a class="term" href="#g-eigenmode">eigenmode simulation</a>.) The result is a chart called a <a class="term" href="#g-dispersion">dispersion diagram</a>. Think of it as a timetable listing which waves are allowed to travel through the pins at each frequency. A stretch of frequencies with no entries is the band gap.</p>
+
+    <p>The thesis points out two weaknesses. First, nobody had checked that timetable against a real piece of metal. Second, a real waveguide is not an endless field of pins. It has a ridge down the middle and only a few rows on each side, and both of those change the answer.</p>
+
+    <h3>Part one: read the band gap from ripples</h3>
+    <p>Here is the idea behind the new measurement. Send a wave through a short piece of anything and some of it bounces back and forth between the two ends, like an echo in a corridor. At certain frequencies the echoes line up and more signal gets through. At others they fight and less gets through. Plot the signal that emerges against frequency and you see ripples.</p>
+    <p>Each new ripple peak means exactly one more half-wave now fits along the piece. So by simply counting peaks you learn how many waves fit at each frequency, and that <em>is</em> the timetable. Where nothing gets through at all, you have found the band gap.</p>
+  </div>
+
+  <figure class="fig fig-wide" id="ripple-fig" aria-labelledby="ripple-cap">
+    <div class="fig-frame">
+      <span class="tag tag-toy">Simplified illustration</span>
+      <svg id="ripple-svg" viewBox="0 0 720 430" role="img" aria-label="Three stacked drawings. Top: the signal getting through a test piece, rippling as frequency rises, with a dead zone in the middle. Middle: the wave pattern inside the piece at the chosen frequency. Bottom: the dispersion curve being built one dot per ripple peak."></svg>
+    </div>
+    <div class="controls">
+      <div class="control control-wide">
+        <label for="ripple-f">Sweep the test frequency <output id="ripple-out" for="ripple-f"></output></label>
+        <input type="range" id="ripple-f" min="0" max="1000" step="1" value="260">
+        <div class="scale" aria-hidden="true"><span>lower frequency</span><span>higher frequency</span></div>
+      </div>
+    </div>
+    <div class="status" role="status" aria-live="polite"><p id="ripple-text"></p></div>
+    <figcaption id="ripple-cap">Sweep slowly from left to right. Every time the top curve passes a peak, one more half-wave fits inside the piece (middle), and one more dot lands on the dispersion curve (bottom). The frequency axis has no numbers because this is a made-up test piece that shows the method. The method itself is the thesis's <span class="ref">(Ch.&nbsp;3, Sec.&nbsp;3.1.1)</span>.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>What comes out of a lab instrument in such a test are <a class="term" href="#g-sparams">S-parameters</a>: how much signal is reflected and how much gets through, at each frequency. The thesis states that this is the first time a band gap was measured from them. A nice feature is that the method only needs the <em>size</em> of the signal, not its timing, which makes it forgiving of imperfect instruments.</p>
+
+    <ul class="results">
+      <li><span class="badge badge-sim">Simulated</span> The method was first checked on two textbook structures whose timetables are known exactly, and it reproduced them <span class="ref">(pp.&nbsp;56–60)</span>.</li>
+      <li><span class="badge badge-meas">Measured</span> Then a strip of real pins, 23 pins long, was machined, placed inside a standard metal waveguide and measured. The curve extracted from the measurement follows the simulated one <span class="ref">(pp.&nbsp;65–69)</span>.</li>
+    </ul>
+
+    <div class="callout callout-warn">
+      <p class="callout-title">Two honest limits</p>
+      <p>The lab's adapters only worked from 12.4 to 18&nbsp;GHz, so nothing above 18&nbsp;GHz could be measured. The test pins were small ones whose stop band (in simulation) runs from about 17 to nearly 39&nbsp;GHz, so the measurement reached only the first edge of the gap, not across it.</p>
+      <p>The parts were machined to within 0.002&nbsp;inch. That sounds tiny, but it is more than 5% of the air gap, which the thesis calls <q>the most critical parameter in the ridge gap unit cells</q> <span class="ref">(Ch.&nbsp;3, p.&nbsp;67)</span>.</p>
+    </div>
+
+    <h3>Part two: the ridge steals some of the band</h3>
+    <p>The second weakness matters just as much. Add the ridge to the simulation and new, unwanted wave patterns appear near the edges of the gap. The usable band shrinks. The thesis's suggestion is simple: stop quoting the band of the pins alone, and quote the band with the ridge in place.</p>
+  </div>
+
+  <figure class="fig fig-wide" id="disp-fig" aria-labelledby="disp-cap">
+    <div class="fig-frame">
+      <span class="tag tag-toy">Schematic</span>
+      <svg id="disp-svg" viewBox="0 0 720 380" role="img" aria-label="Schematic dispersion diagram. Frequency runs up the side. Curves show the waves that can exist among the pins. A shaded horizontal band marks the stop band where no curve passes. Adding the ridge draws in a straight line for the wanted wave and extra curves that make the usable band narrower."></svg>
+    </div>
+    <div class="controls controls-center">
+      <div class="seg" role="group" aria-label="Choose what to show">
+        <button type="button" class="seg-btn is-on" data-disp="cell" aria-pressed="true">Pins alone</button>
+        <button type="button" class="seg-btn" data-disp="ridge" aria-pressed="false">Pins with the ridge</button>
+      </div>
+    </div>
+    <div class="status" role="status" aria-live="polite"><p id="disp-text"></p></div>
+    <figcaption id="disp-cap">How to read it: pick a frequency on the left and look across. If you hit a curve, a wave of that frequency can travel. If you hit nothing, it cannot. The curve shapes are sketched to show the idea. The band edges are the thesis's values for its main square-pin example <span class="ref">(Ch.&nbsp;2, p.&nbsp;32; Ch.&nbsp;3, pp.&nbsp;73, 87)</span>.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>Part three: does the shape of the pin matter?</h3>
+    <p>Yes. The thesis compares five pin shapes with the same height, spacing and gap. For each it gives the <a class="term" href="#g-ratio">bandwidth ratio</a> (top frequency divided by bottom frequency) twice: for the pins alone, and with the ridge in place.</p>
+  </div>
+
+  <figure class="fig fig-wide" id="shapes-fig" aria-labelledby="shapes-cap">
+    <div class="fig-frame">
+      <div class="chart-head">
+        <h3 class="chart-title">Bandwidth ratio of five pin shapes</h3>
+        <div class="legend" aria-hidden="true">
+          <span><i class="lg lg-alone"></i>Pins alone</span>
+          <span><i class="lg lg-ridge"></i>With the ridge (what you can actually use)</span>
+        </div>
+      </div>
+      <div class="shapechart" id="shapes-chart"></div>
+    </div>
+    <figcaption id="shapes-cap">All values are from computer simulation <span class="ref">(Ch.&nbsp;3, pp.&nbsp;73–74)</span>. Bars start at 1&nbsp;:&nbsp;1 because a ratio of 1 means no band at all. Select a shape to read about it.</figcaption>
+    <div class="status" role="status" aria-live="polite"><p id="shapes-text"></p></div>
+  </figure>
+
+  <div class="col">
+    <p>The best shape on paper is a cone standing on its point. It barely loses anything when the ridge is added. It is also, in the thesis's words, almost impossible to manufacture. So the thesis proposes something practical: print a flat cone shape in copper on a slice of circuit board and stand the slices up in rows. The “grounded” version adds a strip along the bottom to guarantee a good electrical connection.</p>
+
+    <p>With the ridge in place, this printed cone matches the awkward solid cone (2.02 against 2.04) and clearly beats the ordinary square pin (1.82), while being cheap to make.</p>
+
+    <ul class="results">
+      <li><span class="badge badge-sim">Simulated</span> In the version that was built, the printed-cone fence works from 9.3 to 18.7&nbsp;GHz with the ridge (a ratio of 2.01), against 10.7 to 19.5&nbsp;GHz (1.82) for square pins <span class="ref">(pp.&nbsp;86–87)</span>.</li>
+      <li><span class="badge badge-built">Built</span> Straight lines with both kinds of pin were fabricated. The thesis text describes a measured comparison, though the curves in its plot are labelled as two simulation methods, so this page treats the numbers as simulated.</li>
+    </ul>
+
+    <details class="deeper">
+      <summary>Go deeper: two more ideas from this chapter</summary>
+      <p><strong>Two different gaps.</strong> A smaller gap above the pins widens the stop band. But the gap above the ridge also sets the ridge's electrical character, and a very small gap forces a very narrow ridge that is hard to feed a signal into. The thesis separates the two: a small gap over the pins, a taller one over the ridge. It calls this the dual gap height waveguide. A taller gap over the ridge also lets the waveguide carry more power before the air sparks over, which happens at about 3 million volts per metre <span class="ref">(pp.&nbsp;80–81)</span>.</p>
+      <p><strong>No gap at all over the pins.</strong> Once the two gaps are independent, the pins can touch the lid. The structure becomes a ridge waveguide whose solid side walls are replaced by rows of pins. In simulation the usable ratio rises to about 4 to 1 with the ridge in place, and a formula derived in the thesis predicts the lowest working frequency as 5.27&nbsp;GHz against 5.2&nbsp;GHz from simulation <span class="ref">(pp.&nbsp;83–85)</span>. The price is that contact with the lid is needed again.</p>
+      <p><strong>When two waves share a frequency.</strong> If two wave patterns can exist at the same frequency, the ripple-counting method sees them blended together. Separating them would need timing equipment with a resolution around 10<sup>−15</sup> seconds, which the lab did not have. In that case the method returns an averaged curve <span class="ref">(pp.&nbsp;55–56)</span>.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================ CH 4 -->
+<section id="ch4" class="section">
+  <div class="col">
+    <p class="kicker">Chapter 4 · Splitting and sharing</p>
+    <h2>Two building blocks: a divider and a coupler</h2>
+    <p>With good connectors and a trustworthy way to find the band, the thesis starts building parts. The first two, a <a class="term" href="#g-divider">power divider</a> and a <a class="term" href="#g-coupler">hybrid coupler</a>, are called <a class="term" href="#g-reciprocal">reciprocal</a>: they behave the same whichever way the signal runs through them, like a pipe junction.</p>
+  </div>
+
+  <div class="fig fig-wide duo">
+    <article class="card device" id="dev-divider">
+      <div class="device-head"><h3>Power divider</h3><span class="badge badge-sim">Simulated</span></div>
+      <svg viewBox="0 0 320 190" role="img" aria-label="Top view of a power divider: one ridge comes in from the left, widens in two steps and splits into two ridges that leave to the right. Animated dashes show the signal splitting equally.">
+        <g class="dv-pins" id="divider-pins"></g>
+        <path class="dv-ridge" d="M10 95h90"/>
+        <path class="dv-ridge dv-wide1" d="M100 95h32"/>
+        <path class="dv-ridge dv-wide2" d="M132 95h30"/>
+        <path class="dv-ridge" d="M162 95q26 0 26-26v-8q0-22 22-22h100"/>
+        <path class="dv-ridge" d="M162 95q26 0 26 26v8q0 22 22 22h100"/>
+        <path class="dv-flow" d="M10 95h152q26 0 26-26v-8q0-22 22-22h100"/>
+        <path class="dv-flow" d="M10 95h152q26 0 26 26v8q0 22 22 22h100"/>
+        <text class="x-lbl" x="14" y="80">in</text>
+        <text class="x-lbl" x="306" y="28" text-anchor="end">half</text>
+        <text class="x-lbl" x="306" y="176" text-anchor="end">half</text>
+      </svg>
+      <p><strong>A Y-junction for waves.</strong> One signal in, two equal signals out. Antennas made of many small elements need these to feed every element.</p>
+      <p>Earlier ridge gap dividers used less than half of the band their pins allowed. This one adds two widening steps and a small notch at the fork so that reflections stay below −17&nbsp;dB over 95% of the band its pins allow. Its working range is about 10.3 to 20.3&nbsp;GHz <span class="ref">(pp.&nbsp;91–94)</span>.</p>
+    </article>
+
+    <article class="card device" id="dev-coupler">
+      <div class="device-head"><h3>3-dB hybrid coupler</h3><span class="badge badge-meas">Measured</span></div>
+      <svg viewBox="0 0 320 190" role="img" aria-label="Top view of a hybrid coupler: two parallel ridges merge into a shared square region in the middle and separate again. A signal entering the top-left port leaves in two equal halves from the two right-hand ports. Nothing comes out of the bottom-left port.">
+        <g class="dv-pins" id="coupler-pins"></g>
+        <path class="dv-ridge" d="M10 55h100M210 55h100M10 135h100M210 135h100"/>
+        <rect class="dv-block" x="108" y="46" width="104" height="98" rx="4"/>
+        <circle class="dv-dome" cx="160" cy="95" r="15"/>
+        <path class="dv-flow" d="M10 55h300"/>
+        <path class="dv-flow" d="M10 55h110q40 0 40 40t40 40h110"/>
+        <text class="x-lbl" x="12" y="40">1 · in</text>
+        <text class="x-lbl" x="308" y="40" text-anchor="end">2 · half</text>
+        <text class="x-lbl" x="308" y="160" text-anchor="end">3 · half, a quarter-step late</text>
+        <text class="x-lbl" x="12" y="160">4 · quiet</text>
+      </svg>
+      <p><strong>A fair intersection.</strong> A signal entering one port leaves as two equal halves from the two ports on the far side, one a quarter of a wave behind the other. The fourth port stays quiet. “3&nbsp;dB” is just the decibel way of saying “half”.</p>
+      <p>Designed around 15&nbsp;GHz for 5G and radar, it covers about 14 to 16.5&nbsp;GHz. It was built and tested, and the measured curves closely follow the simulation <span class="ref">(pp.&nbsp;94–108)</span>.</p>
+    </article>
+  </div>
+
+  <div class="col">
+    <details class="deeper">
+      <summary>Go deeper: how they were designed and tested</summary>
+      <p><strong>Divider.</strong> When one line splits into two, the wave suddenly sees two paths in parallel, which looks like half the <a class="term" href="#g-matching">impedance</a>. Two intermediate ridge widths (again sized with the Chebyshev recipe) smooth that step. The pins used here have a stop band of 10 to 20.5&nbsp;GHz with the ridge. With a finite number of pin rows the divider works from 10.3 to 20.3&nbsp;GHz, which covers the whole <a class="term" href="#g-kuband">Ku-band</a> and parts of the bands on either side <span class="ref">(pp.&nbsp;92–94, 164)</span>. The thesis reports simulated results for the divider.</p>
+      <p><strong>Coupler.</strong> The starting point is a known hollow-waveguide design in which two guides share a short opening. The thesis fits a simple formula for the length of the shared region, adapts it to the ridge gap waveguide (the length is halved, because the field is strongest at the ridge edges rather than zero there), designs it first with ideal “magnetic” boundaries, then swaps in real pins. The realised coupler has 16.6% bandwidth with −14&nbsp;dB matching <span class="ref">(pp.&nbsp;96–102)</span>.</p>
+      <p><strong>Testing.</strong> A four-port device is measured two ports at a time, so the other two must be closed off with ends that absorb everything. The thesis built its own absorbing ends, its own adapters and its own <a class="term" href="#g-calibration">calibration</a> pieces, then removed the adapters' effect mathematically <span class="ref">(pp.&nbsp;102–105)</span>.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================ CH 5 -->
+<section id="ch5" class="section">
+  <div class="col">
+    <p class="kicker">Chapter 5 · One-way traffic</p>
+    <h2>The circulator: a roundabout where you must take the first exit</h2>
+
+    <p>A radar shouts with a powerful transmitter and then listens for a faint echo with a delicate receiver, often through the same antenna. Something has to steer the outgoing shout to the antenna and the returning echo to the receiver, and never mix them up.</p>
+
+    <p>That something is a <a class="term" href="#g-circulator">circulator</a>. It has three ports. Whatever enters port 1 leaves at port 2. Whatever enters port 2 leaves at port 3. Port 3 leads back to port 1. It is a roundabout where every driver must take the very next exit.</p>
+
+    <p>No arrangement of plain metal can do this, because plain metal treats both directions alike. The trick is a small disc of <a class="term" href="#g-ferrite">ferrite</a>, a magnetic ceramic, sitting at the junction with a magnet behind it. Inside magnetised ferrite, a wave turning one way round feels a different material from a wave turning the other way. Tune the disc correctly and the two add up at one exit and cancel at the other.</p>
+  </div>
+
+  <figure class="fig" id="circ-fig" aria-labelledby="circ-cap">
+    <div class="fig-frame">
+      <span class="tag tag-toy">Simplified illustration</span>
+      <svg id="circ-svg" viewBox="0 0 420 360" role="img" aria-label="Top view of a three-port circulator. Three ridges meet at a round ferrite disc in the centre. Choose a port to send a signal and watch which port it comes out of."></svg>
+    </div>
+    <div class="controls">
+      <div class="control control-buttons">
+        <span class="control-title" id="circ-send-title">Send a signal into</span>
+        <div class="btnrow" role="group" aria-labelledby="circ-send-title">
+          <button type="button" class="chip" data-circ-port="1">Port 1</button>
+          <button type="button" class="chip" data-circ-port="2">Port 2</button>
+          <button type="button" class="chip" data-circ-port="3">Port 3</button>
+        </div>
+      </div>
+      <div class="control control-buttons">
+        <span class="control-title" id="circ-mag-title">Magnet</span>
+        <div class="seg" role="group" aria-labelledby="circ-mag-title">
+          <button type="button" class="seg-btn is-on" data-circ-mag="1" aria-pressed="true">On</button>
+          <button type="button" class="seg-btn" data-circ-mag="-1" aria-pressed="false">Flipped</button>
+          <button type="button" class="seg-btn" data-circ-mag="0" aria-pressed="false">Removed</button>
+        </div>
+      </div>
+    </div>
+    <div class="status" role="status" aria-live="polite"><p id="circ-text">Choose a port to send a signal in. You can also click the port labels in the picture.</p></div>
+    <figcaption id="circ-cap">With the magnet on, the signal always takes the next exit and the third port stays quiet. Flip the magnet and the roundabout runs the other way. Remove it and the junction becomes an ordinary three-way fork again.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>What the thesis adds</h3>
+    <p>Designing the junction usually means a lot of trial and error in a simulator. The thesis derives a direct recipe: given the frequency you want, a set of formulas gives the disc size, how strongly magnetic the ferrite must be, and how wide the ridges should be where they meet it. The recipe is not tied to ridge gap waveguides and can be used with other kinds of line.</p>
+
+    <ul class="results">
+      <li><span class="badge badge-sim">Simulated</span> Two circulators were designed this way, one centred on 15&nbsp;GHz and one on 30&nbsp;GHz, aimed at 5G and airborne radar <span class="ref">(pp.&nbsp;111, 121)</span>.</li>
+      <li><span class="badge badge-sim">Simulated</span> Both give almost 40% bandwidth with reflections and leakage to the wrong port (<a class="term" href="#g-isolation">isolation</a>) at −15&nbsp;dB or better. Proposed 5G bands need less than 10% <span class="ref">(pp.&nbsp;122–123)</span>.</li>
+      <li>The thesis presents these as the first circulators designed in ridge gap waveguide. They were not fabricated.</li>
+    </ul>
+
+    <details class="deeper">
+      <summary>Go deeper: the design steps and numbers</summary>
+      <p>The analysis solves the field equations inside a magnetised ferrite disc and asks for a field that is present at the input and output ports and zero at the third. That condition, together with requiring the junction to look purely resistive, fixes the disc radius and the angle each ridge covers on the disc's rim.</p>
+      <p>For both designs the thesis chooses a “gyrotropy” of −0.6. This number measures how differently the ferrite treats the two rotation senses, and the thesis recommends staying between −0.2 and −0.8. The ferrite has a relative permittivity of 12.9. The junction then looks like a resistance of 16.82&nbsp;Ω, while the air-filled ridge line is about 54.98&nbsp;Ω, so a short matching section filled with an insulator (relative permittivity 7.75) bridges the two <span class="ref">(pp.&nbsp;119–122)</span>.</p>
+      <p>The design is done in two passes, the same way as the coupler. First ideal “magnetic” boundaries stand in for the pins, which already gives more than 25% bandwidth. Then real pins replace them. The real ridge spreads its field slightly wider than the ideal one, an effect the design allows for in advance, and the final bandwidth comes out at almost 40%.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================ CH 6 -->
+<section id="ch6" class="section">
+  <div class="col">
+    <p class="kicker">Chapter 6 · Putting it to work</p>
+    <h2>Two applications: weighing fabric with waves, and steering a beam</h2>
+
+    <h3>1. How much does cloth slow a microwave?</h3>
+    <p>Antennas sewn into clothing are an active research area. To design one you need to know how the fabric affects a wave passing through it. That property is the fabric's <a class="term" href="#g-permittivity">relative permittivity</a>: how much the material slows the wave compared with air. Walking through water is slower than walking through air, and water has the higher number.</p>
+
+    <p>Fabric is awkward to test. It is thin and soft, and its number is low, only a little above air's value of 1. The ridge gap waveguide happens to be a good fit: its air gap is a thin slot, just right for a strip of cloth, and its wave is so well behaved that the mathematics stays simple.</p>
+
+    <p>The method reuses the ripple-counting trick from Chapter&nbsp;3. Measure the waveguide empty. Slide a strip of fabric into the gap above the ridge and measure again. With the fabric in, the wave is slower, so more waves fit in the same length. Compare the two and the fabric's number drops out.</p>
+  </div>
+
+  <figure class="fig fig-wide" id="fabric-fig" aria-labelledby="fabric-cap">
+    <div class="fig-frame fabric-frame">
+      <div class="fabric-grid">
+        <div class="fabric-table-wrap">
+          <table class="datatable" id="fabric-table">
+            <caption>Measured samples <span class="badge badge-meas">Measured</span></caption>
+            <thead><tr><th scope="col">Sample</th><th scope="col">Effective value in the gap</th><th scope="col">Material's own value</th></tr></thead>
+            <tbody id="fabric-body"></tbody>
+          </table>
+          <p class="table-note">Select a row to plot it.</p>
+        </div>
+        <svg id="fabric-svg" viewBox="0 0 380 280" role="img" aria-label="Two straight lines showing how quickly the wave's phase turns as frequency rises: one for the empty air-filled waveguide and a steeper one with the selected sample in the gap."></svg>
+      </div>
+    </div>
+    <div class="status" role="status" aria-live="polite"><p id="fabric-text"></p></div>
+    <figcaption id="fabric-cap">Values from the thesis <span class="ref">(Ch.&nbsp;6, pp.&nbsp;146, 151)</span>. The “effective” value is what the waveguide sees with a strip of material filling the gap above the ridge. A calibration curve, made by simulation, converts it to the material's own value.</figcaption>
+  </figure>
+
+  <div class="col">
+    <ul class="results">
+      <li><span class="badge badge-meas">Measured</span> A check with a commercial circuit-board material whose value is known to be 1.96 returned 1.92, an error of 2% <span class="ref">(p.&nbsp;146)</span>.</li>
+      <li><span class="badge badge-meas">Measured</span> A cotton-polyester blend came out at 1.38 and pure cotton at 1.53. Repeating the procedure three times changed the result by only about 0.1% <span class="ref">(p.&nbsp;151)</span>.</li>
+      <li>A different method from another study, which works on another principle (resonance), gave 1.41 for the blend. That is close to 1.38.</li>
+    </ul>
+
+    <details class="deeper">
+      <summary>Go deeper: the formula and the error budget</summary>
+      <p>The wave's “phase constant” <var>β</var> says how quickly its phase turns per unit length. Because the waveguide's wave is <a class="term" href="#g-tem">quasi-TEM</a>, filling the gap simply scales it:</p>
+      <p class="eq"><var>β</var><sub>filled</sub> = <var>β</var><sub>air</sub> × √<var>ε</var><sub>eff</sub></p>
+      <p>So plotting one against the other gives a straight line, and the slope squared is the effective permittivity <span class="ref">(eq.&nbsp;6.11)</span>. It is “effective” because part of the field fringes out into the air beside the strip.</p>
+      <p>Error sources the thesis works through <span class="ref">(pp.&nbsp;136–140, 154–155)</span>:</p>
+      <ul>
+        <li>If the sample is 10% thinner than the gap, leaving a sliver of air, the result is about 3% low for a material near 1.5, rising to 9% for a material near 10. Fabrics are at the favourable end.</li>
+        <li>Slight electrical conductivity and frequency dependence in the material add about 1%, as long as the conductivity stays below 0.1&nbsp;S/m.</li>
+        <li>Instrument errors mostly disturb signal timing, which the method does not use.</li>
+      </ul>
+      <p>A limit: a denser material lowers the top of the usable band, so this particular setup is good for values below about 3. The empty waveguide's usable band is 11 to 23&nbsp;GHz <span class="ref">(pp.&nbsp;142–143)</span>.</p>
+    </details>
+
+    <h3>2. An antenna that steers its beam by changing frequency</h3>
+    <p>Cut a row of slots in the lid above the ridge and a little of the wave escapes through each one, like water from a soaker hose. Together the slots form a beam. This is a <a class="term" href="#g-leaky">leaky-wave antenna</a>.</p>
+
+    <p>Where the beam points depends on the timing between slots (their relative <a class="term" href="#g-phase">phase</a>), and that timing shifts with frequency. So changing the frequency slightly swings the beam, with no moving parts.</p>
+
+    <p>There is a catch. If the slots are spaced too far apart, extra unwanted beams appear in other directions. These are called <a class="term" href="#g-grating">grating lobes</a>. Spacing the slots half a wavelength apart prevents them, but then neighbouring slots would radiate in opposition and cancel. The thesis's answer: feed two ridges side by side with opposite timing and alternate the slots between them. Now every slot is in step, and they are close enough together that no extra beams form.</p>
+  </div>
+
+  <figure class="fig" id="ant-fig" aria-labelledby="ant-cap">
+    <div class="fig-frame">
+      <span class="tag tag-toy">Illustrative angle</span>
+      <svg id="ant-svg" viewBox="0 0 520 330" role="img" aria-label="Side view of a flat slot antenna with a beam rising from it. The beam points straight up at 13.8 gigahertz and tilts to one side as the frequency is lowered."></svg>
+    </div>
+    <div class="controls">
+      <div class="control control-wide">
+        <label for="ant-f">Frequency <output id="ant-out" for="ant-f">13.8 GHz</output></label>
+        <input type="range" id="ant-f" min="13.2" max="13.8" step="0.05" value="13.8" list="ant-ticks">
+        <datalist id="ant-ticks"><option value="13.2"></option><option value="13.4"></option><option value="13.6"></option><option value="13.8"></option></datalist>
+        <div class="scale scale-pos" aria-hidden="true"><span style="left:0%">13.2</span><span style="left:33.33%">13.4</span><span style="left:66.67%">13.6</span><span style="left:100%">13.8 GHz</span></div>
+      </div>
+    </div>
+    <div class="status" role="status" aria-live="polite"><p id="ant-text"></p></div>
+    <figcaption id="ant-cap">The thesis shows simulated beam patterns at 13.2, 13.4, 13.6 and 13.8&nbsp;GHz <span class="ref">(Ch.&nbsp;6, pp.&nbsp;159–162)</span>. The beam points straight up at 13.8&nbsp;GHz and leans further over as the frequency drops. The tilt drawn here is only a rough guide. <span class="badge badge-sim">Simulated</span></figcaption>
+  </figure>
+
+  <div class="col">
+    <details class="deeper">
+      <summary>Go deeper: the feed, and why straight-up is the hard direction</summary>
+      <p>The two ridges get their opposite timing from a four-port junction called a <a class="term" href="#g-magictee">magic tee</a>, designed for the Ku-band. Feeding one of its ports splits the power into two halves that are exactly out of step. Earlier designs used a separate phase-shifting part for this, which only works properly over a narrow band. In simulation the magic tee is matched to −15&nbsp;dB over more than 80% of the Ku-band <span class="ref">(p.&nbsp;156)</span>.</p>
+      <p>Each slot removes a little power, so slots further along are made slightly wider to radiate the same amount as the earlier ones.</p>
+      <p>The straight-up direction, called <a class="term" href="#g-broadside">broadside</a>, is where all the small reflections from the slots add up in step at the input. The thesis notes that both the matching and the antenna's gain are at their worst there, at 13.8&nbsp;GHz <span class="ref">(p.&nbsp;159)</span>.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================ RESULTS -->
+<section id="results" class="section section-tint">
+  <div class="col">
+    <p class="kicker">All results at a glance</p>
+    <h2>Every frequency band in the thesis, on one chart</h2>
+    <p>Each bar is a range of frequencies over which something works. Solid blue bars were measured on real hardware. Hatched orange bars come from computer simulation only.</p>
+  </div>
+  <figure class="fig fig-wide" id="results-fig" aria-labelledby="results-cap">
+    <div class="fig-frame">
+      <div class="chart-head">
+        <h3 class="chart-title">Working frequency ranges (GHz)</h3>
+        <div class="legend" aria-hidden="true">
+          <span><i class="lg lg-meas"></i>Measured</span>
+          <span><i class="lg lg-sim"></i>Simulated</span>
+          <span><i class="lg lg-ref"></i>Ku-band, 12.4 to 18 GHz</span>
+        </div>
+      </div>
+      <div class="bandchart" id="results-chart"></div>
+    </div>
+    <figcaption id="results-cap">Hover or focus a bar for its source page. “Simulated” does not mean wrong, and “measured” does not mean measured across the whole bar: see the notes in the table.</figcaption>
+    <details class="deeper deeper-table">
+      <summary>Show the same data as a table, with notes and page numbers</summary>
+      <div class="table-scroll"><table class="datatable" id="results-table">
+        <thead><tr><th scope="col">Item</th><th scope="col">Range (GHz)</th><th scope="col">Evidence</th><th scope="col">Note</th><th scope="col">Thesis page</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </details>
+  </figure>
+</section>
+
+<!-- ============================================================ CRITIQUE -->
+<section id="critique" class="section">
+  <div class="col">
+    <p class="kicker">Critical take</p>
+    <h2>What holds up, what to question, what comes next</h2>
+    <p>Explaining a thesis fairly means looking at its limits as well as its results. This is one reader's assessment.</p>
+
+    <div class="cols3">
+      <div class="card">
+        <h3>Strengths</h3>
+        <ul>
+          <li>It attacks the real bottleneck first. Without wideband connectors, nothing else in a ridge gap system can be tested properly.</li>
+          <li>The band-gap measurement needs only signal size, not timing, so it works with ordinary lab equipment.</li>
+          <li>Quoting the band <em>with the ridge in place</em> is a more honest figure than the one usually published.</li>
+          <li>The printed cone trades a difficult machining job for an ordinary circuit-board process.</li>
+          <li>The circulator recipe is general and gives designers a starting point instead of a search.</li>
+          <li>The connector, the coupler and the fabric setup were built and measured, and agree with simulation.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Limitations</h3>
+        <ul>
+          <li><strong>The 18 GHz ceiling.</strong> The band-gap measurement stops at 18&nbsp;GHz because of the lab's adapters, so only the lower edge of the gap was seen, not the gap itself.</li>
+          <li><strong>Machining tolerance.</strong> A tolerance of 0.002&nbsp;inch is over 5% of the gap, the most sensitive dimension. Smaller gaps, which give wider bands, would make this worse.</li>
+          <li><strong>Aluminium.</strong> The parts were made in aluminium to save cost. The thesis's own simulations show the loss depends noticeably on the metal, and the measured loss was dominated by one soldered contact.</li>
+          <li><strong>Simulation only.</strong> The power divider, both circulators, the antenna, the circuit-board adapter and the pin-shape comparison rest on simulation. The circulator depends on a ferrite the thesis assumes can be ordered.</li>
+          <li><strong>Small samples.</strong> The fabric method was checked against one known material and applied to two fabrics.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Future work</h3>
+        <ul>
+          <li>The thesis proposes more passive parts (loop couplers, magic tees), more one-way parts (phase shifters, duplexers) and then active, amplifying parts.</li>
+          <li>Its stated final goal is a complete high-frequency link built in ridge gap waveguide <span class="ref">(Ch.&nbsp;7)</span>.</li>
+          <li>An obvious next step from this page's point of view: build and measure the simulated devices, and repeat the band-gap measurement with adapters that reach across the whole gap.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Questions worth discussing</h3>
+    <ol class="questions">
+      <li>The ripple method was only demonstrated up to the lower edge of the stop band. What would you need to build to confirm the upper edge, and what could go wrong there?</li>
+      <li>The rule of thumb for the band is far off, yet full simulation of one pin also misses the effect of the ridge. If you were designing a waveguide for a new frequency, in what order would you use the three tools (formula, single-pin simulation, simulation with ridge)?</li>
+      <li>Smaller gaps widen the band but tighten the machining tolerance. The dual-gap idea eases one side of that trade. What does it cost?</li>
+      <li>The printed cone puts circuit-board material back into a structure whose selling point is that the wave travels in air. Why might that still be acceptable?</li>
+      <li>A circulator needs a magnet and a ceramic disc. How does that change the “no contact, easy assembly” story of the ridge gap waveguide?</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ GLOSSARY -->
+<section id="glossary" class="section section-tint">
+  <div class="col">
+    <p class="kicker">Glossary</p>
+    <h2>Every technical term, in plain words</h2>
+    <p>Dotted-underlined words anywhere on this page show these definitions when you hover, tap or focus them.</p>
+    <dl class="glossary" id="glossary-list">
+      <div id="g-bandgap"><dt>Band gap (stop band)</dt><dd>A range of frequencies in which a wave cannot travel through a repeating structure such as a field of pins. A ridge gap waveguide only works inside its pins' band gap.</dd></div>
+      <div id="g-ratio"><dt>Bandwidth and bandwidth ratio</dt><dd>Bandwidth is the range of frequencies over which something works. The ratio is the top frequency divided by the bottom one, so “2&nbsp;:&nbsp;1” means the top is double the bottom. A percentage bandwidth is the width divided by the centre frequency.</dd></div>
+      <div id="g-nails"><dt>Bed of nails</dt><dd>A regular grid of metal pins standing on a metal plate. Near the frequency where the pins are a quarter wavelength tall, the tops of the pins act together like a magnetic conductor.</dd></div>
+      <div id="g-broadside"><dt>Broadside</dt><dd>The direction pointing straight out from the face of a flat antenna, at right angles to it.</dd></div>
+      <div id="g-calibration"><dt>Calibration</dt><dd>Measuring a few known reference pieces first, so that the effect of cables and adapters can be subtracted and only the device itself is measured.</dd></div>
+      <div id="g-circulator"><dt>Circulator</dt><dd>A three-port part that passes a signal from each port only to the next one round: 1 to 2, 2 to 3, 3 to 1. It lets a transmitter and a receiver share one antenna.</dd></div>
+      <div id="g-coax"><dt>Coaxial cable (coax)</dt><dd>A cable with a central wire surrounded by an insulating layer and a metal tube. It is the standard way to connect microwave instruments. The thesis uses a precision type with a 2.92&nbsp;mm opening.</dd></div>
+      <div id="g-db"><dt>Decibel (dB)</dt><dd>A compact way to write a ratio of powers. −3&nbsp;dB is half, −10&nbsp;dB is one tenth, −20&nbsp;dB is one hundredth. For reflections and leakage, more negative is better.</dd></div>
+      <div id="g-dispersion"><dt>Dispersion and dispersion diagram</dt><dd>Dispersion means that waves of different frequency travel at different speeds, which smears sharp signals. A dispersion diagram plots, for a given structure, which combinations of frequency and wavelength can travel in it. A gap in the diagram is a band gap.</dd></div>
+      <div id="g-eigenmode"><dt>Eigenmode simulation</dt><dd>A computer calculation that finds every wave pattern able to exist in one repeating cell of a structure, assuming the cell repeats forever.</dd></div>
+      <div id="g-ferrite"><dt>Ferrite</dt><dd>A magnetic ceramic. When magnetised, it treats waves rotating clockwise differently from waves rotating anticlockwise, which makes one-way devices possible.</dd></div>
+      <div id="g-frequency"><dt>Frequency</dt><dd>How many times a wave oscillates each second, measured in hertz (Hz).</dd></div>
+      <div id="g-ghz"><dt>Gigahertz (GHz)</dt><dd>One billion oscillations per second. A megahertz (MHz) is one million.</dd></div>
+      <div id="g-grating"><dt>Grating lobes</dt><dd>Unwanted extra beams from an antenna made of many elements. They appear when the elements are spaced too far apart compared with the wavelength.</dd></div>
+      <div id="g-coupler"><dt>Hybrid coupler (3-dB)</dt><dd>A four-port part that splits a signal into two equal halves, one a quarter of a wave behind the other, while the fourth port receives nothing.</dd></div>
+      <div id="g-isolation"><dt>Isolation</dt><dd>How little signal leaks to a port that should receive none, quoted in decibels. More negative is better.</dd></div>
+      <div id="g-kuband"><dt>Ku-band</dt><dd>A named slice of the microwave range. The standard waveguide hardware used in the thesis's lab for this band covers 12.4 to 18&nbsp;GHz. It is used by satellite links and by the airborne radars the thesis has in mind.</dd></div>
+      <div id="g-leaky"><dt>Leaky-wave antenna</dt><dd>An antenna made by letting a guided wave escape a little at a time along its length, for example through a row of slots. Its beam direction changes with frequency.</dd></div>
+      <div id="g-magictee"><dt>Magic tee</dt><dd>A four-port junction that can split a signal into two halves that are either exactly in step or exactly out of step, depending on which port is fed.</dd></div>
+      <div id="g-matching"><dt>Matching and impedance</dt><dd>Impedance describes how a line “feels” to a wave, a little like the stiffness of a rope. Where two lines of different impedance meet, part of the wave bounces back. Matching means shaping the junction so that almost nothing bounces.</dd></div>
+      <div id="g-microstrip"><dt>Microstrip</dt><dd>A flat metal strip on a circuit board with a metal sheet on the other side. Cheap and common, but it loses more energy as frequency rises.</dd></div>
+      <div id="g-microwave"><dt>Microwave</dt><dd>An electromagnetic wave, the same family as light and radio, with a frequency between 300&nbsp;MHz and 300&nbsp;GHz.</dd></div>
+      <div id="g-mode"><dt>Mode</dt><dd>One of the distinct wave patterns that can travel in a structure. A good waveguide carries exactly one mode in its working band.</dd></div>
+      <div id="g-pec"><dt>PEC (perfect electric conductor)</dt><dd>An idealised metal with no resistance. It reflects a wave and flips it. Real copper and aluminium come close.</dd></div>
+      <div id="g-permittivity"><dt>Permittivity (relative and effective)</dt><dd>A number that says how much a material slows a wave compared with empty space. Air is almost exactly 1. “Effective” permittivity is the in-between value a wave experiences when it travels partly in a material and partly in air.</dd></div>
+      <div id="g-phase"><dt>Phase</dt><dd>Where a wave is in its cycle (crest, trough or in between) at a given moment. Two waves “in step” have the same phase.</dd></div>
+      <div id="g-pmc"><dt>PMC (perfect magnetic conductor)</dt><dd>An idealised surface that reflects a wave without flipping it. No natural material does this, but a bed of nails imitates it over a band of frequencies. Also called an artificial magnetic conductor.</dd></div>
+      <div id="g-divider"><dt>Power divider</dt><dd>A part that splits one signal into two (or more) equal copies.</dd></div>
+      <div id="g-tem"><dt>Quasi-TEM</dt><dd>A wave pattern in which the electric and magnetic fields point almost entirely across the direction of travel. Its speed hardly depends on frequency, so signals are not smeared.</dd></div>
+      <div id="g-reciprocal"><dt>Reciprocal and non-reciprocal</dt><dd>A reciprocal part behaves the same whichever direction the signal travels. A non-reciprocal part, such as a circulator, does not.</dd></div>
+      <div id="g-rgw"><dt>Ridge gap waveguide (RGW)</dt><dd>A waveguide in which the wave travels in a thin air gap between a metal ridge and a metal lid, with a bed of nails on both sides to stop it spreading sideways. The lid does not need to touch the rest.</dd></div>
+      <div id="g-sparams"><dt>S-parameters</dt><dd>The standard report card of a microwave part. S11 says how much of the signal sent into port 1 bounces back. S21 says how much arrives at port 2. They are measured with an instrument called a vector network analyser.</dd></div>
+      <div id="g-transition"><dt>Transition</dt><dd>An adapter that carries a wave smoothly from one kind of line to another, for example from a coaxial cable to a ridge gap waveguide.</dd></div>
+      <div id="g-cell"><dt>Unit cell</dt><dd>The single repeating building block of a periodic structure. Here: one pin with its share of floor, gap and lid.</dd></div>
+      <div id="g-waveguide"><dt>Waveguide</dt><dd>Any structure that carries a wave along a chosen path instead of letting it spread out. Often it means specifically a hollow metal pipe.</dd></div>
+      <div id="g-wavelength"><dt>Wavelength</dt><dd>The distance from one wave crest to the next. It equals the speed of the wave divided by its frequency.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============================================================ QUIZ -->
+<section id="quiz" class="section">
+  <div class="col">
+    <p class="kicker">Self-check</p>
+    <h2>Seven quick questions</h2>
+    <p>No score is saved. Pick an answer to see whether it is right and why.</p>
+    <div id="quiz-list" class="quiz"></div>
+    <p class="quiz-score" id="quiz-score" role="status" aria-live="polite"></p>
+    <noscript><p>The quiz needs JavaScript to run.</p></noscript>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="col">
+    <p><strong>Source.</strong> Shokry I. Shamseldin, <cite>Analysis and Design of Microwave Devices Based on Ridge Gap Waveguide Technology</cite>, PhD thesis, Department of Electrical and Computer Engineering, Concordia University, Montréal, Québec, Canada, August 2016. Supervisor: Dr. Ahmed A. Kishk. Read the original at the <a href="https://spectrum.library.concordia.ca/id/eprint/981921/" rel="noopener">Concordia University Spectrum research repository</a>.</p>
+    <p><strong>About this page.</strong> This is an independent student explainer. It is not affiliated with or endorsed by the author or Concordia University. All ideas, results and numbers belong to the thesis and its author. The wording is my own, and every diagram was drawn from scratch in code. No thesis figures are reproduced. Diagrams marked “simplified illustration” or “schematic” use toy physics to build intuition and are not simulations. If you spot an error, it is mine, not the thesis's.</p>
+    <p class="footer-meta">Page written November 2026 · Code released under the MIT licence · <a href="https://github.com/ved-cmpt/rgw-explainer" rel="noopener">Source on GitHub</a></p>
+  </div>
+</footer>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<script src="script.js"></script>
+</body>
+</html>
